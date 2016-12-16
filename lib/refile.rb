@@ -306,7 +306,7 @@ module Refile
     # @param [String, nil] host            Override the host
     # @param [String, nil] prefix          Adds a prefix to the URL if the application is not mounted at root
     # @return [String, nil]                The generated URL
-    def file_url(file, *args, host: nil, prefix: nil, filename:, format: nil)
+    def file_url(file, *args, host: nil, prefix: nil, filename:, format: nil, disposition:)
       return unless file
 
       host ||= Refile.cdn_host
@@ -315,7 +315,7 @@ module Refile
       filename = Rack::Utils.escape(filename)
       filename << "." << format.to_s if format
 
-      base_path = ::File.join("", backend_name, *args.map(&:to_s), file.id.to_s, filename)
+      base_path = ::File.join("", backend_name, *args.map(&:to_s), disposition.to_s, file.id.to_s, filename)
 
       ::File.join(app_url(prefix: prefix, host: host), token(base_path), base_path)
     end
@@ -380,7 +380,7 @@ module Refile
     # @param [String, nil] host            Override the host
     # @param [String, nil] prefix          Adds a prefix to the URL if the application is not mounted at root
     # @return [String, nil]                The generated URL
-    def attachment_url(object, name, *args, host: nil, prefix: nil, filename: nil, format: nil)
+    def attachment_url(object, name, *args, host: nil, prefix: nil, filename: nil, format: nil, disposition: :inline)
       attacher = object.send(:"#{name}_attacher")
       file = attacher.get
       return unless file
@@ -388,7 +388,7 @@ module Refile
       filename ||= attacher.basename || name.to_s
       format ||= attacher.extension
 
-      file_url(file, *args, host: host, prefix: prefix, filename: filename, format: format)
+      file_url(file, *args, host: host, prefix: prefix, filename: filename, format: format, disposition: disposition)
     end
 
     # Receives an instance of a class which has used the

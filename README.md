@@ -392,6 +392,12 @@ no file has been uploaded:
 <%= attachment_image_tag(@user, :profile_image, :fill, 300, 300, fallback: "default.png") %>
 ```
 
+You can also force downloading of a file instead of rendering inline:
+
+``` erb
+<%= @user.profile_image_url(disposition: :attachment) %>
+```
+
 ## 5. JavaScript library
 
 Refile's JavaScript library is small but powerful.
@@ -816,7 +822,7 @@ RSpec.describe Post, type: :model do
 
     expect(post.image_id).not_to be_nil
   end
-  
+
   it "doesn't allow attaching other files" do
     post = Post.new
 

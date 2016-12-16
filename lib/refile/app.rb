@@ -37,27 +37,27 @@ module Refile
       halt 403 unless verified?
     end
 
-    get "/:token/:backend/:id/:filename" do
+    get "/:token/:backend/:disposition/:id/:filename" do
       halt 404 unless download_allowed?
       stream_file file
     end
 
-    get "/:token/:backend/:processor/:id/:file_basename.:extension" do
+    get "/:token/:backend/:processor/:disposition/:id/:file_basename.:extension" do
       halt 404 unless download_allowed?
       stream_file processor.call(file, format: params[:extension])
     end
 
-    get "/:token/:backend/:processor/:id/:filename" do
+    get "/:token/:backend/:processor/:disposition/:id/:filename" do
       halt 404 unless download_allowed?
       stream_file processor.call(file)
     end
 
-    get "/:token/:backend/:processor/*/:id/:file_basename.:extension" do
+    get "/:token/:backend/:processor/*/:disposition/:id/:file_basename.:extension" do
       halt 404 unless download_allowed?
       stream_file processor.call(file, *params[:splat].first.split("/"), format: params[:extension])
     end
 
-    get "/:token/:backend/:processor/*/:id/:filename" do
+    get "/:token/:backend/:processor/*/:disposition/:id/:filename" do
       halt 404 unless download_allowed?
       stream_file processor.call(file, *params[:splat].first.split("/"))
     end
@@ -137,7 +137,7 @@ module Refile
 
       filename = request.path.split("/").last
 
-      send_file path, filename: filename, disposition: "inline", type: ::File.extname(request.path)
+      send_file path, filename: filename, disposition: params[:disposition], type: ::File.extname(request.path)
     end
 
     def backend
